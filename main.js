@@ -60,21 +60,21 @@ const atmosphereMaterial = new THREE.ShaderMaterial({
     intensity: { value: 0.5 },
   },
   vertexShader: `
-            varying vec3 vNormal;
-            void main() {
-                vNormal = normalize(normalMatrix * normal);
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-        `,
+        varying vec3 vNormal;
+        void main() {
+            vNormal = normalize(normalMatrix * normal);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
   fragmentShader: `
-            uniform vec3 glowColor;
-            uniform float intensity;
-            varying vec3 vNormal;
-            void main() {
-                float glow = pow(1.0 - dot(vNormal, vec3(0, 0, 1)), 2.0) * intensity;
-                gl_FragColor = vec4(glowColor * glow, glow);
-            }
-        `,
+        uniform vec3 glowColor;
+        uniform float intensity;
+        varying vec3 vNormal;
+        void main() {
+            float glow = pow(1.0 - dot(vNormal, vec3(0, 0, 1)), 2.0) * intensity;
+            gl_FragColor = vec4(glowColor * glow, glow);
+        }
+    `,
   side: THREE.BackSide,
   blending: THREE.AdditiveBlending,
   transparent: true,
@@ -146,28 +146,35 @@ function createLandmasses(geoJson) {
 createLandmasses(geoJson)
 
 // Starfield with twinkling
-const starCount = 5000
-const starGeometry = new THREE.BufferGeometry()
-const starPositions = new Float32Array(starCount * 3)
-const starSizes = new Float32Array(starCount)
-const starBrightness = new Float32Array(starCount)
-for (let i = 0; i < starCount; i++) {
-  starPositions[i * 3] = (Math.random() - 0.5) * 2000
-  starPositions[i * 3 + 1] = (Math.random() - 0.5) * 2000
-  starPositions[i * 3 + 2] = (Math.random() - 0.5) * 2000
-  starSizes[i] = Math.random() * 2 + 0.5
-  starBrightness[i] = Math.random() * 0.5 + 0.5
-}
-starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3))
-starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1))
-starGeometry.setAttribute('brightness', new THREE.BufferAttribute(starBrightness, 1))
-const starTexture = loader.load('https://threejs.org/examples/textures/sprites/disc.png')
-const starMaterial = new THREE.ShaderMaterial({
-  uniforms: {
-    starTexture: { value: starTexture },
-    time: { value: 0 },
-  },
-  vertexShader: `
+let starCount = 5000
+let starSize = 2
+let twinkleSpeed = 2
+let stars, starGeometry, starMaterial
+
+function createStarfield() {
+  if (stars) scene.remove(stars)
+  starGeometry = new THREE.BufferGeometry()
+  const starPositions = new Float32Array(starCount * 3)
+  const starSizes = new Float32Array(starCount)
+  const starBrightness = new Float32Array(starCount)
+  for (let i = 0; i < starCount; i++) {
+    starPositions[i * 3] = (Math.random() - 0.5) * 2000
+    starPositions[i * 3 + 1] = (Math.random() - 0.5) * 2000
+    starPositions[i * 3 + 2] = (Math.random() - 0.5) * 2000
+    starSizes[i] = Math.random() * starSize + 0.5
+    starBrightness[i] = Math.random() * 0.5 + 0.5
+  }
+  starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3))
+  starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1))
+  starGeometry.setAttribute('brightness', new THREE.BufferAttribute(starBrightness, 1))
+  const starTexture = loader.load('https://threejs.org/examples/textures/sprites/disc.png')
+  starMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      starTexture: { value: starTexture },
+      time: { value: 0 },
+      twinkleSpeed: { value: twinkleSpeed },
+    },
+    vertexShader: `
             attribute float size;
             attribute float brightness;
             varying float vBrightness;
@@ -177,19 +184,23 @@ const starMaterial = new THREE.ShaderMaterial({
                 gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             }
         `,
-  fragmentShader: `
+    fragmentShader: `
             uniform sampler2D starTexture;
             uniform float time;
+            uniform float twinkleSpeed;
             varying float vBrightness;
             void main() {
-                float twinkle = sin(time * 2.0 + vBrightness * 10.0) * 0.2 + 0.8;
+                float twinkle = sin(time * twinkleSpeed + vBrightness * 10.0) * 0.2 + 0.8;
                 gl_FragColor = texture2D(starTexture, gl_PointCoord) * vec4(1.0, 1.0, 1.0, vBrightness * twinkle);
             }
         `,
-  transparent: true,
-})
-const stars = new THREE.Points(starGeometry, starMaterial)
-scene.add(stars)
+    transparent: true,
+  })
+  stars = new THREE.Points(starGeometry, starMaterial)
+  scene.add(stars)
+}
+
+createStarfield()
 
 // Post-processing
 const composer = new EffectComposer(renderer)
@@ -210,14 +221,46 @@ function hideLoading() {
   document.getElementById('loading').classList.remove('visible')
 }
 
+// Menu controls
+const menuToggle = document.getElementById('menu-toggle')
+const settingsMenu = document.getElementById('settings-menu')
+const closeMenu = document.getElementById('close-menu')
+const settingsForm = document.getElementById('settings-form')
+
+menuToggle.addEventListener('click', () => {
+  settingsMenu.classList.toggle('open')
+})
+
+closeMenu.addEventListener('click', () => {
+  settingsMenu.classList.remove('open')
+})
+
+settingsForm.addEventListener('submit', (e) => {
+  e.preventDefault()
+  starCount = parseInt(document.getElementById('star-count').value)
+  starSize = parseFloat(document.getElementById('star-size').value)
+  twinkleSpeed = parseFloat(document.getElementById('twinkle-speed').value)
+  atmosphereMaterial.uniforms.intensity.value = parseFloat(document.getElementById('glow-intensity').value)
+  atmosphereMaterial.uniforms.glowColor.value = new THREE.Color(document.getElementById('glow-color').value)
+  cloudMaterial.opacity = parseFloat(document.getElementById('cloud-opacity').value)
+  clouds.userData.rotationSpeed = parseFloat(document.getElementById('cloud-speed').value)
+  earth.userData.rotationSpeed = parseFloat(document.getElementById('earth-speed').value)
+  bloomPass.strength = parseFloat(document.getElementById('bloom-strength').value)
+  bloomPass.radius = parseFloat(document.getElementById('bloom-radius').value)
+  bloomPass.threshold = parseFloat(document.getElementById('bloom-threshold').value)
+  createStarfield()
+})
+
 // Animation
 let time = 0
+clouds.userData.rotationSpeed = 0.0015
+earth.userData.rotationSpeed = 0.001
 
 function animate() {
   requestAnimationFrame(animate)
   time += 0.016
-  earth.rotation.y += 0.001
-  clouds.rotation.y += 0.0015
+  earth.rotation.y += earth.userData.rotationSpeed
+  clouds.rotation.y += clouds.userData.rotationSpeed
   starMaterial.uniforms.time.value = time
   controls.update()
   composer.render()
