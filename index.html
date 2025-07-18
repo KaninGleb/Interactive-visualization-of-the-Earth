@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth and Starfield Simulation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="info">Use mouse to rotate, scroll to zoom</div>
+<div id="loading" class="visible">Loading textures...</div>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.162.0/examples/jsm/"
+        }
+    }
+</script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
