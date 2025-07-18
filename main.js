@@ -227,6 +227,28 @@ const settingsMenu = document.getElementById('settings-menu')
 const closeMenu = document.getElementById('close-menu')
 const settingsForm = document.getElementById('settings-form')
 
+// Update range input values display
+const rangeInputs = [
+  'star-size',
+  'twinkle-speed',
+  'glow-intensity',
+  'cloud-opacity',
+  'cloud-speed',
+  'earth-speed',
+  'bloom-strength',
+  'bloom-radius',
+  'bloom-threshold'
+]
+
+rangeInputs.forEach(id => {
+  const input = document.getElementById(id)
+  const valueSpan = document.getElementById(`${id}-value`)
+  valueSpan.textContent = input.value
+  input.addEventListener('input', () => {
+    valueSpan.textContent = input.value
+  })
+})
+
 menuToggle.addEventListener('click', () => {
   settingsMenu.classList.toggle('open')
 })
