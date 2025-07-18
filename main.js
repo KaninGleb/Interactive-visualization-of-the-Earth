@@ -42,16 +42,6 @@ const earthMaterial = new THREE.MeshPhongMaterial({
 const earth = new THREE.Mesh(earthGeometry, earthMaterial)
 scene.add(earth)
 
-// Clouds
-const cloudGeometry = new THREE.SphereGeometry(earthRadius + 0.05, 64, 64)
-const cloudMaterial = new THREE.MeshPhongMaterial({
-  map: loader.load('https://threejs.org/examples/textures/planets/earth_clouds_2048.jpg'),
-  transparent: true,
-  opacity: 0.4,
-})
-const clouds = new THREE.Mesh(cloudGeometry, cloudMaterial)
-scene.add(clouds)
-
 // Atmosphere
 const atmosphereGeometry = new THREE.SphereGeometry(earthRadius + 0.1, 64, 64)
 const atmosphereMaterial = new THREE.ShaderMaterial({
@@ -232,8 +222,6 @@ const rangeInputs = [
   'star-size',
   'twinkle-speed',
   'glow-intensity',
-  'cloud-opacity',
-  'cloud-speed',
   'earth-speed',
   'bloom-strength',
   'bloom-radius',
@@ -264,8 +252,6 @@ settingsForm.addEventListener('submit', (e) => {
   twinkleSpeed = parseFloat(document.getElementById('twinkle-speed').value)
   atmosphereMaterial.uniforms.intensity.value = parseFloat(document.getElementById('glow-intensity').value)
   atmosphereMaterial.uniforms.glowColor.value = new THREE.Color(document.getElementById('glow-color').value)
-  cloudMaterial.opacity = parseFloat(document.getElementById('cloud-opacity').value)
-  clouds.userData.rotationSpeed = parseFloat(document.getElementById('cloud-speed').value)
   earth.userData.rotationSpeed = parseFloat(document.getElementById('earth-speed').value)
   bloomPass.strength = parseFloat(document.getElementById('bloom-strength').value)
   bloomPass.radius = parseFloat(document.getElementById('bloom-radius').value)
@@ -275,17 +261,15 @@ settingsForm.addEventListener('submit', (e) => {
 
 // Animation
 let time = 0
-clouds.userData.rotationSpeed = 0.0015
 earth.userData.rotationSpeed = 0.001
 
 function animate() {
   requestAnimationFrame(animate)
   time += 0.016
   earth.rotation.y += earth.userData.rotationSpeed
-  clouds.rotation.y += clouds.userData.rotationSpeed
   starMaterial.uniforms.time.value = time
   controls.update()
-  composer.render()
+  composer.render(time)
 }
 
 animate()

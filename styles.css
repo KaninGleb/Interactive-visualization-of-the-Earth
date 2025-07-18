@@ -65,8 +65,12 @@ canvas {
 }
 
 @keyframes pulse-fade {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
 }
 
 #loading {
@@ -93,8 +97,12 @@ canvas {
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
 .menu-button {
@@ -116,10 +124,10 @@ canvas {
 
 .menu-button:hover,
 .menu-button:focus {
-    background: rgba(0,0,0,0.6);
-    border-color: rgba(255,255,255,0.2);
+    background: rgba(0, 0, 0, 0.6);
+    border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     outline: none;
 }
 
@@ -206,7 +214,7 @@ fieldset {
     border: 1px solid var(--color-white-transparent-15);
     padding: 20px;
     border-radius: 12px;
-    background: var(--color-white-transparent-02, rgba(255,255,255,0.02));
+    background: var(--color-white-transparent-02, rgba(255, 255, 255, 0.02));
     transition: background-color 0.3s ease, border-color 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -214,8 +222,8 @@ fieldset {
 }
 
 fieldset:hover {
-    border-color: var(--color-white-transparent-25, rgba(255,255,255,0.25));
-    background: var(--color-white-transparent-04, rgba(255,255,255,0.04));
+    border-color: var(--color-white-transparent-25, rgba(255, 255, 255, 0.25));
+    background: var(--color-white-transparent-04, rgba(255, 255, 255, 0.04));
 }
 
 legend {
@@ -249,8 +257,8 @@ input[type="number"] {
 input[type="number"]:focus {
     outline: none;
     border-color: var(--color-blue);
-    background: rgba(255,255,255,0.08);
-    box-shadow: 0 0 0 3px rgba(0,179,255,0.1);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(0, 179, 255, 0.1);
 }
 
 input[type="range"] {
@@ -351,6 +359,7 @@ button[type="submit"]:active {
         width: 100%;
         right: -100%;
     }
+
     .menu-button {
         top: 15px;
         right: 15px;
