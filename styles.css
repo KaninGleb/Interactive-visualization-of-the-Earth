@@ -22,14 +22,16 @@ canvas {
     padding: 15px 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.3s ease,
+    opacity 0.3s ease;
     opacity: 0.9;
     pointer-events: none;
     animation: pulse1 10s infinite ease-in-out;
 }
 
 @keyframes pulse1 {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 1;
     }
     50% {
